@@ -51,7 +51,7 @@ def parse_rules_backwards(rules: list):
 
 
 def traverse_dict_for_bag(rules: dict):
-    bag_key = 'light red'
+    bag_key = 'shiny gold'
     unique_bags = set()
     traverse(rules, bag_key, unique_bags)
     return unique_bags
@@ -74,13 +74,39 @@ def traverse(rules: dict, key: str, results: set):
             results.add(bag)
     except KeyError:
         return
-    
+
+
+def get_count_for_total_bags(rules: dict):
+    bag_color = "shiny gold"
+
+    def sum_of_bags(bag_sum: int, bag_name: str):
+        if rules[bag_name][0] == 'no other':
+            return 1
+        else:
+            intermediate_sum = 0
+            for bag in rules[bag_name]:
+                rule_list = bag.split(' ')
+                multiplier = int(rule_list[0])
+                new_bag_color = ' '.join(rule_list[1:])
+                intermediate_sum += (multiplier * sum_of_bags(bag_sum, new_bag_color))
+        return intermediate_sum + 1
+    return sum_of_bags(0, bag_color) - 1
+
 
 advent_part_1 = composite_function(
     parse_data,
     parse_rules_backwards,
     traverse_dict_for_bag,
+    len,
+    print
+)
+
+advent_part_2 = composite_function(
+    parse_data,
+    parse_rules,
+    get_count_for_total_bags,
     print
 )
 
 advent_part_1(read_data())
+advent_part_2(read_data())
